@@ -1,13 +1,7 @@
 /*
- * 31 mar 2015
- * This sketch display UDP packets coming from an UDP client.
- * On a Mac the NC command can be used to send UDP. (nc -u 192.168.1.101 2390).
- *
- * Configuration : Enter the ssid and password of your Wifi AP. Enter the port number your server is listening on.
- *
-  13 apr 2015. Partly working. Packets are received and displayed, but the confirmation packet is not received by the client.
-  Tested with Mac as cleint using netcat (nc -u 192.168.1.101 2390)
-
+ this code is provided under GPLV2, please don't sue me,
+ multicast sample from http://www.esp8266.com/viewtopic.php?f=29&t=2464 thanks
+ thanks to the knxd team for the gateway and to buswar.de for the usb dongle: http://busware.de/tiki-index.php?page=TUL
  */
 
 #include <ESP8266WiFi.h>
@@ -21,13 +15,14 @@ unsigned int localPort = 3671;      // local port to listen for UDP packets
 
 byte packetBuffer[512]; //buffer to hold incoming and outgoing packets
 
-// A UDP instance to let us send and receive packets over UDP
-WiFiUDP Udp;
+WiFiUDP Udp;  // A UDP instance to let us send and receive packets over UDP
 
 // Multicast declarations
 IPAddress ipMulti(224, 0, 23, 12);
 unsigned int portMulti = 3671;      // local port to listen on
 byte ledSwitch=0;
+
+// led status declaration
 int ledValue=255;
 int dimmingDirection=0;
 int loopNumber=0;
@@ -45,28 +40,23 @@ void printWifiStatus() {
 
 
 void setup() {
-  // set pin 16 (conneted to blue LED) to output
-  pinMode(16, OUTPUT);          
-  // Open serial communications and wait for port to open:
-  Serial.begin(115200);
-  // setting up Station AP
-  WiFi.begin(ssid, pass);
+  pinMode(16, OUTPUT);      // set pin 16 (conneted to blue LED) to output
+  Serial.begin(115200);     // Open serial communications and wait for port to open:
+  WiFi.begin(ssid, pass);   // setting up Station AP
+  
   // Wait for connect to AP
   Serial.print("[Connecting]");
   Serial.print(ssid);
   int tries=0;
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED && tries < 30) {
     delay(500);
     Serial.print(".");
     tries++;
-    if (tries > 30) {
-      break;
-    }
   }
   Serial.println();
 
 
-printWifiStatus();
+  printWifiStatus();
 
   Serial.println("Connected to wifi");
   Serial.print("Udp Multicast server started at : ");
@@ -81,7 +71,7 @@ void loop()
   loopNumber++;
   if (loopNumber>500) { // if dimming, do it once each 500 loop to be humanly acceptable
     loopNumber=0;       //reset loop number
-    if (ledValue>=0 && ledValue<=255) ledValue=ledValue+dimmingDirection;
+    if (ledValue>=0 && ledValue<=255) ledValue=ledValue+dimmingDirection; // continue dimming if needed
     if (ledValue<0) ledValue=0;     //should never happen but better be safe than sorry
     if (ledValue>255) ledValue=255; //should never happen but better be safe than sorry
   }
