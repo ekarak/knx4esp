@@ -8,8 +8,8 @@
 #include <WiFiUDP.h>
 
 int status = WL_IDLE_STATUS;
-const char* ssid = "Freebox";  //  your network SSID (name)
-const char* pass = "anewfuckedkey";       // your network password
+const char* ssid = "yourSSID";  //  your network SSID (name)
+const char* pass = "yourpassword";       // your network password
 
 unsigned int localPort = 3671;      // local port to listen for UDP packets
 
