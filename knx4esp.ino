@@ -5,7 +5,7 @@
  */
 
 #include <ESP8266WiFi.h>
-#include <WiFiUDP.h>
+#include <WiFiUdp.h>
 
 int status = WL_IDLE_STATUS;
 const char* ssid = "yourSSID";  //  your network SSID (name)
